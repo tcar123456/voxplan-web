@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="60" viewBox="0 0 180 60">
+  <rect width="180" height="60" rx="10" fill="#000"/>
+  <rect width="178" height="58" rx="9.5" x="1" y="1" fill="none" stroke="#A6A6A6" stroke-width="1"/>
+
+  <!-- Apple logo: leaf + body, ~24x31px, centered at (22, 30) -->
+  <g transform="translate(4, 7.7) scale(0.18)">
+    <!-- leaf -->
+    <path d="M152 55.8C148 60.3 142 63.8 136 63.4C135 57.6 138 51.4 142 47.2C146 42.7 153 39.4 158 39C159 45 156 51 152 55.8Z" fill="#fff"/>
+    <!-- body -->
+    <path d="M158 68C151 68 144 72 141 72C138 72 131 68 124 68C110 68 97 77 90 91C74 119 82 161 97 184C104 195 113 209 125 208C137 208 141 200 154 200C167 200 171 208 183 207C195 207 204 193 211 182C220 169 224 155 224 154C224 154 202 146 201 124C200 105 218 95 218 94C209 81 196 68 183 68Z" fill="#fff"/>
+  </g>
+
+  <!-- Download on the -->
+  <text x="54" y="25" font-family="-apple-system,'Helvetica Neue',Arial,sans-serif" font-size="10" fill="#fff" letter-spacing="0.3">Download on the</text>
+  <!-- App Store -->
+  <text x="54" y="44" font-family="-apple-system,'Helvetica Neue',Arial,sans-serif" font-size="20" font-weight="600" fill="#fff" letter-spacing="-0.3">App Store</text>
+</svg>
