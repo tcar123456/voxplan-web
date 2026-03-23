@@ -683,6 +683,63 @@
       color: rgba(255,255,255,.35);
     }
 
+    /* ─── WAITLIST FORM ─── */
+    .waitlist-form-wrap {
+      margin-top: 40px;
+      padding-top: 36px;
+      border-top: 1px solid rgba(255,255,255,.1);
+    }
+    .waitlist-label {
+      font-size: 0.875rem;
+      color: rgba(255,255,255,.5);
+      margin-bottom: 14px;
+    }
+    .waitlist-form {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .waitlist-input {
+      padding: 13px 20px;
+      border-radius: 99px;
+      border: 1.5px solid rgba(255,255,255,.2);
+      background: rgba(255,255,255,.08);
+      color: var(--white);
+      font-size: 0.9375rem;
+      font-family: var(--font);
+      width: 280px;
+      outline: none;
+      transition: border-color .2s, background .2s;
+    }
+    .waitlist-input::placeholder { color: rgba(255,255,255,.35); }
+    .waitlist-input:focus {
+      border-color: rgba(255,255,255,.5);
+      background: rgba(255,255,255,.12);
+    }
+    .waitlist-btn {
+      padding: 13px 28px;
+      border-radius: 99px;
+      background: var(--white);
+      color: var(--black);
+      font-size: 0.9375rem;
+      font-weight: 700;
+      font-family: var(--font);
+      border: none;
+      cursor: pointer;
+      transition: opacity .15s, transform .15s;
+      white-space: nowrap;
+    }
+    .waitlist-btn:hover { opacity: .88; transform: translateY(-1px); }
+    .waitlist-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+    .waitlist-msg {
+      margin-top: 14px;
+      font-size: 0.875rem;
+      min-height: 1.4em;
+    }
+    .waitlist-msg.success { color: #86efac; }
+    .waitlist-msg.error   { color: #fca5a5; }
+
     /* ─── FOOTER ─── */
     footer {
       background: var(--black);
@@ -1048,6 +1105,22 @@
       </a>
     </div>
     <p class="coming-soon-note">即將上架 · iOS & Android</p>
+
+    <!-- Email 候補名單 -->
+    <div class="waitlist-form-wrap reveal">
+      <p class="waitlist-label">搶先收到上架通知，留下你的 email</p>
+      <div class="waitlist-form">
+        <input
+          type="email"
+          class="waitlist-input"
+          id="waitlistEmail"
+          placeholder="your@email.com"
+          autocomplete="email"
+        >
+        <button class="waitlist-btn" id="waitlistBtn" onclick="submitWaitlist()">通知我</button>
+      </div>
+      <p class="waitlist-msg" id="waitlistMsg"></p>
+    </div>
   </section>
 
   <!-- ─── FOOTER ─── -->
@@ -1072,6 +1145,59 @@
       tabs.forEach((t, i) => t.classList.toggle('active', i === idx));
       contents.forEach((c, i) => c.classList.toggle('active', i === idx));
     }
+
+    // Waitlist
+    async function submitWaitlist() {
+      const input = document.getElementById('waitlistEmail');
+      const btn   = document.getElementById('waitlistBtn');
+      const msg   = document.getElementById('waitlistMsg');
+      const email = input.value.trim();
+
+      msg.className = 'waitlist-msg';
+      msg.textContent = '';
+
+      if (!email) {
+        msg.className = 'waitlist-msg error';
+        msg.textContent = '請填入 email';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '送出中…';
+
+      try {
+        const res = await fetch(
+          'https://us-central1-ai-calendar-app-3b976.cloudfunctions.net/addToWaitlist',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+          }
+        );
+        const data = await res.json();
+
+        if (res.ok) {
+          msg.className = 'waitlist-msg success';
+          msg.textContent = data.status === 'already_subscribed'
+            ? '你已經在名單中了！'
+            : '已收到！上架時會第一時間通知您';
+          input.value = '';
+          btn.textContent = '已送出';
+        } else {
+          throw new Error(data.error || '發生錯誤');
+        }
+      } catch (e) {
+        msg.className = 'waitlist-msg error';
+        msg.textContent = e.message || '送出失敗，請稍後再試';
+        btn.disabled = false;
+        btn.textContent = '通知我';
+      }
+    }
+
+    // 按 Enter 也能送出
+    document.getElementById('waitlistEmail').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') submitWaitlist();
+    });
 
     // Scroll Reveal
     const revealEls = document.querySelectorAll('.reveal');
